@@ -48,3 +48,73 @@
   <a href="sms:0968623529?body=Request">Send Request via SMS</a>
 </body>
 </html>
+<head>
+  <title>OTP Approval System</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <h2>Request Access</h2>
+
+  <input type="text" id="phone" placeholder="Your Phone Number"><br><br>
+  <button onclick="sendRequest()">Send Request</button><br><br>
+
+  <div id="otpSection" style="display:none;">
+    <input type="text" id="otpInput" placeholder="Enter OTP from 0968623529">
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
+
+  <br><br>
+  <button id="joinBtn" disabled>Join Us</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function sendRequest() {
+      const phone = document.getElementById("phone").value;
+      if (!phone) return alert("Enter your phone number");
+
+      const otp = Math.floor(1000 + Math.random() * 9000).toString(); // generate OTP
+
+      db.ref("otpRequests/" + phone).set({
+        otp: otp,
+        approved: false
+      });
+
+      alert("Request sent to admin. Wait for OTP SMS from 0968623529.");
+      document.getElementById("otpSection").style.display = "block";
+
+      // Admin should manually send this OTP to user via 0968623529
+      console.log("Admin OTP for", phone, "is:", otp); // Only for testing
+    }
+
+    function verifyOTP() {
+      const phone = document.getElementById("phone").value;
+      const userOtp = document.getElementById("otpInput").value;
+
+      db.ref("otpRequests/" + phone).once("value", snapshot => {
+        const data = snapshot.val();
+        if (!data) return alert("No request found");
+
+        if (data.otp === userOtp) {
+          db.ref("otpRequests/" + phone).update({ approved: true });
+          alert("OTP Verified. You may now Join.");
+          document.getElementById("joinBtn").disabled = false;
+        } else {
+          alert("Incorrect OTP");
+        }
+      });
+    }
+
