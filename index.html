@@ -8,40 +8,178 @@
 </head>
 <body>
   <header>
-    <h1>Zowi Branding And Promotion Company</h1>
-    <nav>
-      <a href="index.html" class="active">Home</a>
-    </nav>
-  </header>
-  <main>
-    <section class="hero">
-      <h2>Empowering Businesses & Talent in Ethiopia</h2>
-      <p>Connecting organizations with top talent and promoting outstanding products and services.</p>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeoB0_7-WTpT7nBlCvTtjJ8G-SOAxu9nE0updTIApjwDUPW2A/viewform?usp=sharing" class="cta-button" target="_blank">Sign Up / Apply Now</a>
-    </section>
+  <!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Zowi Branding - Join Us</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Send SMS Request</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding-top: 50px;
-    }
-    a {
-      display: inline-block;
-      padding: 12px 20px;
-      background-color: #007BFF;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
+    button {
+      padding: 10px 20px;
+      margin: 10px;
       font-size: 16px;
     }
-    a:hover {
-      background-color: #0056b3;
+    #joinBtn:disabled {
+      background-color: grey;
+      cursor: not-allowed;
     }
   </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <h1>Zowi Branding</h1>
+  <p>Enter your phone number to request access.</p>
+
+  <input type="text" id="phone" placeholder="Your Phone Number"><br>
+  <button onclick="sendRequest()">Send Request</button>
+
+  <div id="otpSection" style="display:none;">
+    <input type="text" id="otpInput" placeholder="Enter OTP from 0968623529">
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
+
+  <br><br>
+  <button id="joinBtn" disabled>Join Us</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function sendRequest() {
+      const phone = document.getElementById("phone").value.trim();
+      if (!phone) return alert("Please enter your phone number.");
+
+      const otp = Math.floor(1000 + Math.random() * 9000).toString();
+      db.ref("otpRequests/" + phone).set({
+        otp: otp,
+        approved: false
+      });
+
+      alert("Request sent. Admin will send OTP to your phone.");
+      document.getElementById("otpSection").style.display = "block";
+      console.log("DEBUG ONLY - OTP for", phone, "is:", otp); // Remove in production
+    }
+
+    function verifyOTP() {
+      const phone = document.getElementById("phone").value.trim();
+      const inputOtp = document.getElementById("otpInput").value.trim();
+
+      db.ref("otpRequests/" + phone).once("value").then(snapshot => {
+        const data = snapshot.val();
+        if (!data) return alert("No request found.");
+
+        if (data.otp === inputOtp) {
+          db.ref("otpRequests/" + phone).update({ approved: true });
+          alert("OTP verified! You can now join.");
+          document.getElementById("joinBtn").disabled = false;
+        } else {
+          alert("Incorrect OTP.");
+        }
+      });
+    }
+  </script>
+</body>
+</html>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zowi Branding - Join Us</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    #joinBtn:disabled {
+      background-color: grey;
+      cursor: not-allowed;
+    }
+  </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <h1>Zowi Branding</h1>
+  <p>Enter your phone number to request access.</p>
+
+  <input type="text" id="phone" placeholder="Your Phone Number"><br>
+  <button onclick="sendRequest()">Send Request</button>
+
+  <div id="otpSection" style="display:none;">
+    <input type="text" id="otpInput" placeholder="Enter OTP from 0968623529">
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
+
+  <br><br>
+  <button id="joinBtn" disabled>Join Us</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function sendRequest() {
+      const phone = document.getElementById("phone").value.trim();
+      if (!phone) return alert("Please enter your phone number.");
+
+      const otp = Math.floor(1000 + Math.random() * 9000).toString();
+      db.ref("otpRequests/" + phone).set({
+        otp: otp,
+        approved: false
+      });
+
+      alert("Request sent. Admin will send OTP to your phone.");
+      document.getElementById("otpSection").style.display = "block";
+      console.log("DEBUG ONLY - OTP for", phone, "is:", otp); // Remove in production
+    }
+
+    function verifyOTP() {
+      const phone = document.getElementById("phone").value.trim();
+      const inputOtp = document.getElementById("otpInput").value.trim();
+
+      db.ref("otpRequests/" + phone).once("value").then(snapshot => {
+        const data = snapshot.val();
+        if (!data) return alert("No request found.");
+
+        if (data.otp === inputOtp) {
+          db.ref("otpRequests/" + phone).update({ approved: true });
+          alert("OTP verified! You can now join.");
+          document.getElementById("joinBtn").disabled = false;
+        } else {
+          alert("Incorrect OTP.");
+        }
+      });
+    }
+  </script>
+</body>
+</html>
 </head>
 <body>
   <a href="sms:0968623529?body=Request">Send Request via SMS</a>
